@@ -1,7 +1,7 @@
 console.log("Helloooo")
 
 mainText = document.getElementById("Main")
-mainText.innerText = "Helloooo"
+mainText.innerText = "Helloooo\nSecond Line"
 
 document.addEventListener("keydown", function(event) {
     mainText.innerText = event.key;
