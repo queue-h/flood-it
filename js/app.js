@@ -1,34 +1,35 @@
 
-introText = document.getElementById("Intro")
+
+let introText = document.getElementById("Intro")
 introText.innerText += "\nCurrent color: "
 
 // vars
 const size = 6
 const numColors = 4
-var win = false
+let win = false
 
 // create matrix
-matrix = document.getElementById("Matrix")
-var matrixArray = createMatrix(size);
+let matrix = document.getElementById("Matrix")
+let matrixArray = createMatrix(size);
 
 // initialize matrix
 matrixArray = fillMatrix(matrixArray, numColors);
 matrix.innerText = printMatrix(matrixArray);
 
-var currentColor = matrixArray[0][0]
-var previousColor = -1
+let newColor = matrixArray[0][0]
+let previousColor = -1
 
-while (!win) {
-    introText.innerText += currentColor
-    
+setInterval(draw, 100)
+
+function draw() {
     document.addEventListener("keydown", function (event) {
-        const key = event.key
+        let key = event.key
         if (key >= 0 && key <= 9) {
-            previousColor = currentColor
-            currentColor = key
-
-            matrixArray = updateMatrix(matrixArray, previousColor, currentColor)
-            matrix.innerText = printMatrix(matrixArray);
+            previousColor = newColor
+            newColor = key
+            console.log(newColor)
+            matrixArray = updateMatrix(matrixArray, previousColor, newColor)
+            matrix.innerText = printMatrix(matrixArray)
         }
     });
 }
@@ -36,9 +37,9 @@ while (!win) {
 // takes in a number to represent side length
 // return an array of length "size" containing arrays of length "size"
 function createMatrix(size) {
-    var matrix = []
+    let matrix = []
     for (let r = 0; r < size; r++) {
-        var rArr = []
+        let rArr = [];
         for (let c = 0; c < size; c++) {
             rArr.push(0)
         }
@@ -50,9 +51,9 @@ function createMatrix(size) {
 // takes in a matrix to edit
 // returns the matrix in string format with spaces between the numbers and /n between arrays
 function printMatrix(matrix) {
-    var outString = ""
-    for (var r = 0; r < matrix.length; r++) {
-        for (var c = 0; c < matrix.length; c++) {
+    let outString = "";
+    for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix.length; c++) {
             outString += matrix[r][c] + " "
         }
         outString += "\n"
@@ -63,25 +64,30 @@ function printMatrix(matrix) {
 // takes in a matrix to edit
 // returns a matrix that has been filled with random numbers ranging from 0 (inclusive) to numColors (exclusive)
 function fillMatrix(matrix, numColors) {
-    for (var r = 0; r < matrix.length; r++) {
-        for (var c = 0; c < matrix.length; c++) {
-            var num = Math.floor(Math.random() * numColors);
-            matrix[r][c] = num
+    for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix.length; c++) {
+            matrix[r][c] = Math.floor(Math.random() * numColors)
         }
     }
     return matrix
 }
 
+// not quite right. need floodfill to cover u-shape caveat
 function updateMatrix(matrix, previousColor, newColor) {
-    for (var r = 0; r < matrix.length; r++) {
-        for (var c = 0; c < matrix.length; c++) {
+    for (let r = 0; r < matrix.length; r++) {
+        for (let c = 0; c < matrix.length; c++) {
             if (matrix[r][c] === previousColor) {
                 matrix[r][c] = newColor
+            }
+            else {
+                break
             }
         }
     }
     return matrix
 }
+
+
 
 // render a board as text and place in paragraph
 // capture a keypress (representing a color)
