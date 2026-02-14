@@ -1,35 +1,35 @@
 
 
-let introText = document.getElementById("Intro")
-introText.innerText += "\nCurrent color: "
+let introText = document.getElementById("Intro");
+introText.innerText += "\nCurrent color: ";
 
 // vars
-const size = 6
-const numColors = 4
-let win = false
+const size = 6;
+const numColors = 4;
+let win = false;
 
 // create matrix
-let matrix = document.getElementById("Matrix")
+let matrix = document.getElementById("Matrix");
 let matrixArray = createMatrix(size);
 
 // initialize matrix
 matrixArray = fillMatrix(matrixArray, numColors);
 matrix.innerText = printMatrix(matrixArray);
 
-let newColor = matrixArray[0][0]
-let previousColor = -1
+let newColor = matrixArray[0][0];
+let previousColor = -1;
 
-setInterval(draw, 100)
+setInterval(draw, 100);
 
 function draw() {
     document.addEventListener("keydown", function (event) {
         let key = event.key
         if (key >= 0 && key <= 9) {
-            previousColor = newColor
-            newColor = key
-            console.log(newColor)
-            matrixArray = updateMatrix(matrixArray, previousColor, newColor)
-            matrix.innerText = printMatrix(matrixArray)
+            previousColor = newColor;
+            newColor = key;
+            console.log(newColor);
+            matrixArray = updateMatrix(matrixArray, newColor);
+            matrix.innerText = printMatrix(matrixArray);
         }
     });
 }
@@ -37,15 +37,15 @@ function draw() {
 // takes in a number to represent side length
 // return an array of length "size" containing arrays of length "size"
 function createMatrix(size) {
-    let matrix = []
+    let matrix = [];
     for (let r = 0; r < size; r++) {
         let rArr = [];
         for (let c = 0; c < size; c++) {
-            rArr.push(0)
+            rArr.push(0);
         }
-        matrix.push(rArr)
+        matrix.push(rArr);
     }
-    return matrix
+    return matrix;
 }
 
 // takes in a matrix to edit
@@ -54,11 +54,11 @@ function printMatrix(matrix) {
     let outString = "";
     for (let r = 0; r < matrix.length; r++) {
         for (let c = 0; c < matrix.length; c++) {
-            outString += matrix[r][c] + " "
+            outString += matrix[r][c] + " ";
         }
-        outString += "\n"
+        outString += "\n";
     }
-    return outString
+    return outString;
 }
 
 // takes in a matrix to edit
@@ -66,25 +66,58 @@ function printMatrix(matrix) {
 function fillMatrix(matrix, numColors) {
     for (let r = 0; r < matrix.length; r++) {
         for (let c = 0; c < matrix.length; c++) {
-            matrix[r][c] = Math.floor(Math.random() * numColors)
+            matrix[r][c] = Math.floor(Math.random() * numColors);
         }
     }
-    return matrix
+    return matrix;
 }
 
-// not quite right. need floodfill to cover u-shape caveat
-function updateMatrix(matrix, previousColor, newColor) {
-    for (let r = 0; r < matrix.length; r++) {
-        for (let c = 0; c < matrix.length; c++) {
-            if (matrix[r][c] === previousColor) {
-                matrix[r][c] = newColor
-            }
-            else {
-                break
+// breadth-first floodfill algorithm
+function updateMatrix(matrix, newColor) {
+
+    // check if player group is already the new color
+    if (matrix[0][0] === newColor) {
+        return matrix;
+    }
+
+    // direction vectors
+    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+    // grab old color from player group
+    const prevColor = matrix[0][0];
+
+    // create a queue on which to add pixels to search
+    let toSearch = [];
+
+    // add starting point to queue
+    toSearch.push([0][0]);
+
+    // change color of first pixel
+    matrix[0][0] = newColor;
+
+    // begin search
+    while (toSearch.length > 0) {
+        const [row, col] = toSearch.shift();
+
+        // traverse all directions
+        for (const i of dirs) {
+            const nextRow = row + i[0];
+            const nextCol = col + i[1];
+
+            // check boundaries and update color
+            if (nextRow >= 0 && nextRow < matrix.length) {
+                if (nextCol >= 0 && nextCol < matrix[0].length) {
+
+                    if (matrix[nextRow][nextCol] === prevColor) {
+                        matrix[nextRow][nextCol] = newColor;
+                        // add pixel to queue to be searched
+                        toSearch.push([nextRow, nextCol]);
+                    }
+                }
             }
         }
     }
-    return matrix
+    return matrix;
 }
 
 
